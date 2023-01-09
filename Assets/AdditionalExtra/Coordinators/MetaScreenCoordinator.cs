@@ -19,7 +19,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         
         protected override UniTask<IRouteResult> OnPresent(CancellationToken token)
         {
-            using (CancellationTokenSource.CreateLinkedTokenSource(token))
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(token))
             {
                 _metaScreenPresenter = _loadingPresenterFactory.Create();
                 _metaScreenPresenter.transform.SetParent(_canvas.transform, false);

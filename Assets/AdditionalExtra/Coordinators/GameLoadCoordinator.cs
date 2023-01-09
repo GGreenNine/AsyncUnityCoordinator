@@ -22,10 +22,10 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         protected override async UniTask<IRouteResult> OnPresent(CancellationToken token)
         {
-            using (CancellationTokenSource.CreateLinkedTokenSource(token))
+            using (var s = CancellationTokenSource.CreateLinkedTokenSource(token))
             {
-                await Loading(token);
-                await LoadMetaScreen(token);
+                await Loading(s.Token);
+                await LoadMetaScreen(s.Token);
                 return new RouteSuccessResult();
             }
         }

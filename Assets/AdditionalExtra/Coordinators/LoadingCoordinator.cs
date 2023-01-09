@@ -26,12 +26,12 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         protected override async UniTask<IRouteResult> OnPresent(CancellationToken ct)
         {
-            using (CancellationTokenSource.CreateLinkedTokenSource(ct))
+            using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
             {
                 _loadingViewPresenter = _loadingPresenterFactory.Create();
                 _loadingViewPresenter.transform.SetParent(_canvas.transform, false);
             
-                await StartTimer(ct);
+                await StartTimer(cts.Token);
                 return new RouteSuccessResult();
             }
         }

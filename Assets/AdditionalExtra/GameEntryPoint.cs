@@ -22,12 +22,8 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         private async UniTaskVoid InitFlow()
         {
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
-            using (cts)
-            {
-                var gameCoordinator = _gameCoordinatorFactory.Create();
-                await gameCoordinator.Present(null, _cts.Token);
-            }
+            var gameCoordinator = _gameCoordinatorFactory.Create();
+            await gameCoordinator.Present(null, _cts.Token);
         }
 
         public void Dispose()

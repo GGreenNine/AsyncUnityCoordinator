@@ -17,12 +17,12 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             _canvas = canvas;
         }
 
-        protected override async UniTask<IRouteResult> OnPresent(CancellationToken ct)
+        protected override UniTask<IRouteResult> OnPresent(CancellationToken ct)
         {
             var source = CancellationTokenSource.CreateLinkedTokenSource(ct);
             using (source)
             {
-                return await Show(source.Token);
+                return Show(source.Token);
             }
         }
 
