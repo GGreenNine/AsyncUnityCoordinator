@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Grigorii.Tatarinov.UnityCoordinator.ViewModels;
+using UnityEngine;
 using Zenject;
 
 namespace Grigorii.Tatarinov.UnityCoordinator
@@ -7,7 +8,6 @@ namespace Grigorii.Tatarinov.UnityCoordinator
     {
         [SerializeField] private LoadingViewPresenter _loadingViewPresenter;
         [SerializeField] private ConfirmationViewPresenter _confirmationViewPresenter;
-        [SerializeField] private MetaScreenPresenter _metaScreenPresenter;
         [SerializeField] private FullScreenPopupHolder _mainCanvas;
         [SerializeField] private PopupHolder _popupHolder;
         
@@ -24,38 +24,26 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         private void BindFactories()
         {
-            Container.BindIFactory<LoadingViewPresenter>().FromMethod(container =>
+            Container.BindIFactory<IMonoModule<EmptyViewModel>>().FromMethod(_ =>
             {
                 return Container.InstantiatePrefabForComponent<LoadingViewPresenter>(_loadingViewPresenter);
             });
             
-            Container.BindIFactory<ConfirmationViewPresenter>().FromMethod(container =>
+            Container.BindIFactory<IMonoModule<ConfirmationViewModel>>().FromMethod(_ =>
             {
                 return Container.InstantiatePrefabForComponent<ConfirmationViewPresenter>(_confirmationViewPresenter);
             });
             
-            Container.BindIFactory<MetaScreenPresenter>().FromMethod(container =>
-            {
-                return Container.InstantiatePrefabForComponent<MetaScreenPresenter>(_metaScreenPresenter);
-            });
+
         }
 
         private void BindCoordinators()
         {
-            BindCoordinator<GameLoadCoordinator>();
-            BindCoordinator<LoadingCoordinator>();
-            BindCoordinator<ConfirmationCoordinator>();
-            BindCoordinator<MetaScreenCoordinator>();
-        }
-
-        private void BindCoordinator<T>() where T : ICoordinator
-        {
-            Container.BindIFactory<T>().FromMethod(container => (T) CreateCoordinator<T>(container));
-        }
-
-        private ICoordinator CreateCoordinator<T>(IInstantiator container) where T : ICoordinator
-        {
-            return container.Instantiate<T>();
+            Container.BindCoordinatorFactory<GameLoadCoordinator>();
+            Container.BindCoordinatorFactory<LoadingCoordinator>();
+            Container.BindCoordinatorFactory<ConfirmationCoordinator>();
+            Container.BindCoordinatorFactory<MetaSceneLoadCoordinator>();
+            
         }
     }
 }
