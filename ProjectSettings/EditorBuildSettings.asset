@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/AdditionalExtra/Scenes/MetaScene.unity
+    guid: 9eea79008091fea418ed3128e1ea5f45
+  - enabled: 1
+    path: Assets/AdditionalExtra/Scenes/EntryPoint.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   m_configObjects: {}
