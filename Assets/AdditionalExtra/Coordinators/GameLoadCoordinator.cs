@@ -11,13 +11,13 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         private readonly IAsyncRouter _router;
         private readonly IFactory<LoadingCoordinator> _loadingCoordinatorFactory;
-        private readonly IFactory<MetaScreenCoordinator> _metaScreenCoordFactory;
+        private readonly IFactory<MetaSceneLoadCoordinator> _metaSceneLoadingCoordFactory;
 
-        public GameLoadCoordinator(IAsyncRouter router, IFactory<LoadingCoordinator> loadingCoordinatorFactory, IFactory<MetaScreenCoordinator> metaScreenCoordFactory)
+        public GameLoadCoordinator(IAsyncRouter router, IFactory<LoadingCoordinator> loadingCoordinatorFactory, IFactory<MetaSceneLoadCoordinator> metaSceneLoadingCoordFactory)
         {
             _router = router;
             _loadingCoordinatorFactory = loadingCoordinatorFactory;
-            _metaScreenCoordFactory = metaScreenCoordFactory;
+            _metaSceneLoadingCoordFactory = metaSceneLoadingCoordFactory;
         }
 
         protected override async UniTask<IRouteResult> OnPresent(CancellationToken token)
@@ -44,8 +44,8 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         private async UniTask LoadMetaScreen(CancellationToken token)
         {
-            var metaScreenCoord = _metaScreenCoordFactory.Create();
-            await _router.Transition(this, _loadingCoordinator, metaScreenCoord, token);
+            var metaSceneCoord = _metaSceneLoadingCoordFactory.Create();
+            await _router.Transition(this, _loadingCoordinator, metaSceneCoord, token);
         }
         
     }

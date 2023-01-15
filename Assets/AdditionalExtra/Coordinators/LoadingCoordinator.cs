@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using Grigorii.Tatarinov.UnityCoordinator.ViewModels;
 using Zenject;
 
 namespace Grigorii.Tatarinov.UnityCoordinator
@@ -8,13 +9,13 @@ namespace Grigorii.Tatarinov.UnityCoordinator
     {
         private readonly IAsyncRouter _router;
         private readonly IFactory<ConfirmationCoordinator> _coordinatorFactory;
-        private readonly IFactory<LoadingViewPresenter> _loadingPresenterFactory;
+        private readonly IFactory<IMonoModule<EmptyViewModel>> _loadingPresenterFactory;
         private readonly IFactory<LoadingCoordinator> _loadingCoordinatorFactory;
         private readonly FullScreenPopupHolder _canvas;
         
-        private LoadingViewPresenter _loadingViewPresenter;
+        private IMonoModule<EmptyViewModel> _loadingViewPresenter;
 
-        public LoadingCoordinator(IFactory<LoadingViewPresenter> loadingPresenterFactory, IFactory<ConfirmationCoordinator> coordinatorFactory, IAsyncRouter router,
+        public LoadingCoordinator(IFactory<IMonoModule<EmptyViewModel>> loadingPresenterFactory, IFactory<ConfirmationCoordinator> coordinatorFactory, IAsyncRouter router,
             FullScreenPopupHolder canvas, IFactory<LoadingCoordinator> loadingCoordinatorFactory)
         {
             _loadingCoordinatorFactory = loadingCoordinatorFactory;
@@ -29,7 +30,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
             {
                 _loadingViewPresenter = _loadingPresenterFactory.Create();
-                _loadingViewPresenter.transform.SetParent(_canvas.transform, false);
+                _loadingViewPresenter.Self.SetParent(_canvas.transform, false);
             
                 await StartTimer(cts.Token);
                 return new RouteSuccessResult();
@@ -39,7 +40,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         protected override void OnDismiss()
         {
             base.OnDismiss();
-            _loadingViewPresenter.ReleaseStrategy.Release();
+            _loadingViewPresenter.ReleaseStrategy?.Release();
         }
 
         private async UniTask StartTimer(CancellationToken ct)
@@ -47,11 +48,14 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             await UniTask.Delay(3000, cancellationToken: ct);
 
             var confirmationCoord = _coordinatorFactory.Create();
-            var result = await _router.Transition(this, null, confirmationCoord, ct);
+            var result = await _router.TransitionModally(this, confirmationCoord, ct);
             if (result is RouteFailedResult)
             {
+                confirmationCoord.Dismiss();
+                _loadingViewPresenter.ReleaseStrategy?.Release();
+                
                 var loadingCoord = _loadingCoordinatorFactory.Create();
-                await _router.Transition(this, confirmationCoord, loadingCoord, ct);
+                await _router.TransitionModally(this, loadingCoord, ct);
             }
         }
     }
