@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -5,26 +6,32 @@ using Cysharp.Threading.Tasks;
 
 namespace Grigorii.Tatarinov.UnityCoordinator
 {
-    public class AbstractCoordinator : ICoordinator
+    public class AbstractCoordinator : ICoordinator, IDisposable
     {
-        private CancellationTokenSource _onDismissTokenSource = new CancellationTokenSource();
-        private readonly HashSet<ICoordinator> _children = new HashSet<ICoordinator>();
-        protected ICoordinator Parent;
-        
+        protected CancellationTokenSource OnDismissTokenSource = new();
+        private readonly HashSet<ICoordinator> _children = new();
+        public ICoordinator Parent { get; private set; }
+        public List<ICoordinator> Children => _children.ToList();
+
+        private bool _isDismissed = false;
+
         public async UniTask<IRouteResult> Present(ICoordinator parent, CancellationToken cancellationToken)
         {
             Parent = parent;
-            using var combinedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _onDismissTokenSource.Token);
+            using var combinedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, OnDismissTokenSource.Token);
             return await OnPresent(combinedTokenSource.Token);
         }
 
         public void Dismiss()
         {
+            if (_isDismissed) return;
+            
             foreach (var coordinator in _children.ToList())
             {
                 coordinator.Dismiss();
             }
             
+            Parent?.RemoveChild(this);
             _children.Clear();
             
             OnDismiss();
@@ -47,9 +54,16 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 
         protected virtual void OnDismiss()
         {
-            _onDismissTokenSource?.Cancel();
-            _onDismissTokenSource?.Dispose();
-            _onDismissTokenSource = new CancellationTokenSource();
+            CoordinatorTracker.StopTracking(this);
+            OnDismissTokenSource?.Cancel();
+            OnDismissTokenSource?.Dispose();
+            OnDismissTokenSource = new CancellationTokenSource();
+            _isDismissed = true;
+        }
+
+        public virtual void Dispose()
+        {
+            OnDismiss();
         }
     }
 }
