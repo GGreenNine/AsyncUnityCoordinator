@@ -7,6 +7,8 @@ The framework implements the Coordinator pattern in C# for Unity, using UniTask 
 3. To use the framework, you will need to create a new script that inherits from the AbstractCoordinator class. This script will handle the logic for a specific section of your application.
 4. You can then transition to your coordinator using AsyncRouter, which is included in the framework package.
 ## Using the Coordinators Browser
+![image](https://user-images.githubusercontent.com/36601610/212541651-66fca449-c6e3-4073-b2fa-9bd34ea0f2a7.png)
+
 1. To access the Coordinators browser, open Tools -> Coordinator Browser.
 2. The browser will display a list of all active coordinators, as well as their nested children.
 3. You can use the browser to easily navigate between coordinators and view their current state.
