@@ -8,11 +8,13 @@ namespace Grigorii.Tatarinov.UnityCoordinator
     public class GameEntryPoint : IInitializable, IDisposable
     {
         private readonly IFactory<ICoordinator> _gameCoordinatorFactory;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cts = new();
+        private readonly IAsyncRouter _router;
 
-        public GameEntryPoint(IFactory<GameLoadCoordinator> gameCoordinatorFactory)
+        public GameEntryPoint(IFactory<GameLoadCoordinator> gameCoordinatorFactory, IAsyncRouter router)
         {
             _gameCoordinatorFactory = gameCoordinatorFactory;
+            _router = router;
         }
 
         public void Initialize()
@@ -23,7 +25,8 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         private async UniTaskVoid InitFlow()
         {
             var gameCoordinator = _gameCoordinatorFactory.Create();
-            await gameCoordinator.Present(null, _cts.Token);
+            await _router.Transition(null, null, gameCoordinator, _cts.Token);
+            gameCoordinator.Dismiss();
         }
 
         public void Dispose()
