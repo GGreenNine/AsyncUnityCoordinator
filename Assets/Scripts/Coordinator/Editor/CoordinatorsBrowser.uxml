@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: stretch;">
+        <ui:Button text="Update" display-tooltip-when-elided="true" view-data-key="update_button" tooltip="Update" style="height: 26px;" />
+        <ui:TreeView view-data-key="data_tree_view" focusable="true" show-border="true" style="justify-content: flex-start; align-items: stretch; left: 0; top: 0; right: 0;" />
+    </ui:VisualElement>
+</ui:UXML>
