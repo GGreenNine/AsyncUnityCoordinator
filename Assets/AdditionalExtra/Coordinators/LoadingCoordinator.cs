@@ -1,6 +1,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Grigorii.Tatarinov.UnityCoordinator.ViewModels;
+using UnityEngine;
 using Zenject;
 
 namespace Grigorii.Tatarinov.UnityCoordinator
@@ -51,11 +52,18 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             var result = await _router.TransitionModally(this, confirmationCoord, ct);
             if (result is RouteFailedResult)
             {
-                confirmationCoord.Dismiss();
-                _loadingViewPresenter.ReleaseStrategy?.Release();
-                
-                var loadingCoord = _loadingCoordinatorFactory.Create();
-                await _router.TransitionModally(this, loadingCoord, ct);
+                /*
+                 *                     confirmationCoord.Dismiss();
+                    _loadingViewPresenter.ReleaseStrategy?.Release();
+                    
+                    var loadingCoord = _loadingCoordinatorFactory.Create();
+                    await _router.TransitionModally(this, loadingCoord, ct);
+                 */
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+         Application.Quit();
+#endif
             }
         }
     }
