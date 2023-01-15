@@ -2,8 +2,14 @@
 
 namespace Grigorii.Tatarinov.UnityCoordinator
 {
-    public interface IMonoModule<out T> : IReleaseTarget where T : MonoBehaviour
+    public interface IMonoModel
     {
-        T Self { get; }
+        
+    }
+    
+    public interface IMonoModule<in T> : IReleaseTarget where T : IMonoModel
+    {
+        Transform Self { get; }
+        void SetModel(T model);
     }
 }
