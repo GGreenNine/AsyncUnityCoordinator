@@ -11,15 +11,13 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         private readonly IAsyncRouter _router;
         private readonly IFactory<ConfirmationCoordinator> _coordinatorFactory;
         private readonly IFactory<IMonoModule<EmptyViewModel>> _loadingPresenterFactory;
-        private readonly IFactory<LoadingCoordinator> _loadingCoordinatorFactory;
         private readonly FullScreenPopupHolder _canvas;
         
         private IMonoModule<EmptyViewModel> _loadingViewPresenter;
 
         public LoadingCoordinator(IFactory<IMonoModule<EmptyViewModel>> loadingPresenterFactory, IFactory<ConfirmationCoordinator> coordinatorFactory, IAsyncRouter router,
-            FullScreenPopupHolder canvas, IFactory<LoadingCoordinator> loadingCoordinatorFactory)
+            FullScreenPopupHolder canvas)
         {
-            _loadingCoordinatorFactory = loadingCoordinatorFactory;
             _canvas = canvas;
             _loadingPresenterFactory = loadingPresenterFactory;
             _coordinatorFactory = coordinatorFactory;
@@ -30,10 +28,11 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         {
             using (var cts = CancellationTokenSource.CreateLinkedTokenSource(ct))
             {
-                _loadingViewPresenter = _loadingPresenterFactory.Create();
+                _loadingViewPresenter = _loadingPresenterFactory.Create(); // creating a new loading presenter using factory
                 _loadingViewPresenter.Self.SetParent(_canvas.transform, false);
             
-                await StartTimer(cts.Token);
+                await UniTask.Delay(3000, cancellationToken: cts.Token); // imitate loading process
+                await Confirmation(cts.Token); // waiting for confirmation coordinator result
                 return new RouteSuccessResult();
             }
         }
@@ -44,21 +43,12 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             _loadingViewPresenter.ReleaseStrategy?.Release();
         }
 
-        private async UniTask StartTimer(CancellationToken ct)
+        private async UniTask Confirmation(CancellationToken ct)
         {
-            await UniTask.Delay(3000, cancellationToken: ct);
-
-            var confirmationCoord = _coordinatorFactory.Create();
-            var result = await _router.TransitionModally(this, confirmationCoord, ct);
-            if (result is RouteFailedResult)
+            var confirmationCoord = _coordinatorFactory.Create(); // creating a new confirmation coordinator using factory
+            var result = await _router.TransitionModallyAsync(this, confirmationCoord, ct); // waiting for player confirmation
+            if (result is RouteFailedResult) // if player declined the confirmation we close the app 
             {
-                /*
-                 *                     confirmationCoord.Dismiss();
-                    _loadingViewPresenter.ReleaseStrategy?.Release();
-                    
-                    var loadingCoord = _loadingCoordinatorFactory.Create();
-                    await _router.TransitionModally(this, loadingCoord, ct);
-                 */
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
 #else
