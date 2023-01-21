@@ -39,13 +39,13 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         private async UniTask Loading(CancellationToken token)
         {
             _loadingCoordinator = _loadingCoordinatorFactory.Create();
-            await _router.Transition(this, null, _loadingCoordinator, token);
+            await _router.TransitionAsync(this, null, _loadingCoordinator, token);
         }
 
         private async UniTask LoadMetaScreen(CancellationToken token)
         {
             var metaSceneCoord = _metaSceneLoadingCoordFactory.Create();
-            await _router.Transition(this, _loadingCoordinator, metaSceneCoord, token);
+            await _router.TransitionAsync(this, _loadingCoordinator, metaSceneCoord, token);
         }
         
     }

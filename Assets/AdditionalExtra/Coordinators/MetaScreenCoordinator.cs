@@ -22,7 +22,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         
         public void Initialize()
         {
-            _router.Transition(null, null, this, OnDismissTokenSource.Token);
+            _router.TransitionAsync(null, null, this, OnDismissTokenSource.Token);
         }
         
         protected override UniTask<IRouteResult> OnPresent(CancellationToken token)

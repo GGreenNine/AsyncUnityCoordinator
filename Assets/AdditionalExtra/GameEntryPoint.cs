@@ -25,7 +25,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
         private async UniTaskVoid InitFlow()
         {
             var gameCoordinator = _gameCoordinatorFactory.Create();
-            await _router.Transition(null, null, gameCoordinator, _cts.Token);
+            await _router.TransitionAsync(null, null, gameCoordinator, _cts.Token);
             gameCoordinator.Dismiss();
         }
 

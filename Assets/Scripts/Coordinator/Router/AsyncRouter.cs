@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 
@@ -5,7 +6,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 {
     public class AsyncRouter : IAsyncRouter
     {
-        public async UniTask<IRouteResult> Transition(ICoordinator parent, ICoordinator current, ICoordinator next, CancellationToken cancellationToken)
+        public async UniTask<IRouteResult> TransitionAsync(ICoordinator parent, ICoordinator current, ICoordinator next, CancellationToken cancellationToken)
         {
             current?.Dismiss();
             parent?.AddChild(next);
@@ -17,7 +18,7 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             return routeResult;
         }
         
-        public async UniTask<IRouteResult> TransitionModally(ICoordinator current, ICoordinator next, CancellationToken cancellationToken)
+        public async UniTask<IRouteResult> TransitionModallyAsync(ICoordinator current, ICoordinator next, CancellationToken cancellationToken)
         {
             current?.AddChild(next);
 
@@ -28,5 +29,6 @@ namespace Grigorii.Tatarinov.UnityCoordinator
             next.Dismiss();
             return routeResult;
         }
+
     }
 }

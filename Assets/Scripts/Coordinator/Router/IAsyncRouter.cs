@@ -5,8 +5,8 @@ namespace Grigorii.Tatarinov.UnityCoordinator
 {
     public interface IAsyncRouter
     {
-        UniTask<IRouteResult> Transition(ICoordinator parent, ICoordinator current, ICoordinator next, CancellationToken cancellationToken);
+        UniTask<IRouteResult> TransitionAsync(ICoordinator parent, ICoordinator current, ICoordinator next, CancellationToken cancellationToken);
 
-        UniTask<IRouteResult> TransitionModally(ICoordinator current, ICoordinator next, CancellationToken cancellationToken);
+        UniTask<IRouteResult> TransitionModallyAsync(ICoordinator current, ICoordinator next, CancellationToken cancellationToken);
     }
 }
